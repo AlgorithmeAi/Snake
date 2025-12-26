@@ -234,8 +234,45 @@ class Snake():
         index = choice(candidates)
         h = self.header[index]
         if self.datatypes[index] == "T":
-            if len(T[self.header[index]]) != len(F[self.header[index]]) and choice(["Do it", "Don't"]) == "Do it":
-                return [index, (len(F[h]) + len(T[h])) / 2, len(T[h]) > len(F[h]), "TN"]
+            if choice(["Do it", "Don't"]) == "Do it":
+                possible = []
+                length = (len(F[h]) != len(T[h]))
+                if length:
+                    possible += ["TN"]
+                alphabet = (len(list(set(F[h]))) != len(list(set(T[h]))))
+                if alphabet:
+                    possible += ["TLN"]
+                alphabet_false = len([c for c in list(set(F[h])) if not c in T[h]]) > 0
+                if alphabet_false:
+                    possible += ["FA"]
+                alphabet_true = len([c for c in list(set(T[h])) if not c in F[h]]) > 0
+                if alphabet_true:
+                    possible += ["TA"]
+                word_splits = (len(F[h].split(" ")) != len(T[h].split(" ")))
+                if word_splits:
+                    possible += ["TWS"]
+                part_splits = (len(F[h].split(",")) != len(T[h].split(",")))
+                if part_splits:
+                    possible += ["TPS"]
+                sent_splits = (len(F[h].split(".")) != len(T[h].split(".")))
+                if sent_splits:
+                    possible += ["TSS"]
+                if len(possible):
+                    todo = choice(possible)
+                    if todo == "TN":
+                        return [index, (len(F[h]) + len(T[h])) / 2, len(T[h]) > len(F[h]), "TN"]
+                    if todo == "TLN":
+                        return [index, (len(list(set(F[h]))) + len(list(set(T[h])))) / 2, len(list(set(T[h]))) > len(list(set(F[h]))), "TLN"]
+                    if todo == "FA":
+                        return [index, choice([c for c in list(set(F[h])) if not c in T[h]]), True, "T"]
+                    if todo == "TA":
+                        return [index, choice([c for c in list(set(T[h])) if not c in F[h]]), False, "T"]
+                    if todo == "TWS":
+                        return [index, (len(F[h].split(" ")) + len(T[h].split(" "))) / 2, len(T[h].split(" ")) > len(F[h].split(" ")), "TWS"]
+                    if todo == "TPS":
+                        return [index, (len(F[h].split(",")) + len(T[h].split(","))) / 2, len(T[h].split(",")) > len(F[h].split(",")), "TWS"]
+                    if todo == "TSS":
+                        return [index, (len(F[h].split(".")) + len(T[h].split("."))) / 2, len(T[h].split(".")) > len(F[h].split(".")), "TWS"]
             pros = set()
             cons = set()
             for sep in [" ", "/", ":", "-"]:
@@ -268,6 +305,26 @@ class Snake():
         datat = literal[3]
         if not self.header[index] in X:
             return False
+        if datat == "TWS":
+            if negat == True:
+                return value <= len(X[self.header[index]].split(" "))
+            if negat == False:
+                return value > len(X[self.header[index]].split(" "))
+        if datat == "TPS":
+            if negat == True:
+                return value <= len(X[self.header[index]].split(","))
+            if negat == False:
+                return value > len(X[self.header[index]].split(","))
+        if datat == "TSS":
+            if negat == True:
+                return value <= len(X[self.header[index]].split("."))
+            if negat == False:
+                return value > len(X[self.header[index]].split("."))
+        if datat == "TLN":
+            if negat == True:
+                return value <= len(list(set(X[self.header[index]])))
+            if negat == False:
+                return value > len(list(set(X[self.header[index]])))
         if datat == "TN":
             if negat == True:
                 return value <= len(X[self.header[index]])
@@ -364,6 +421,26 @@ class Snake():
                 value = literal[1]
                 negat = literal[2]
                 datat = literal[3]
+                if datat == "TWS":
+                    if negat == True:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has words of length less than [{value}]"
+                    if negat == False:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has words of length more than [{value}]"
+                if datat == "TPS":
+                    if negat == True:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has sections of length less than [{value}]"
+                    if negat == False:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has sections of length more than [{value}]"
+                if datat == "TSS":
+                    if negat == True:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has sentences of length less than [{value}]"
+                    if negat == False:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has sentences of length more than [{value}]"
+                if datat == "TLN":
+                    if negat == True:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has alphabet of length less than [{value}]"
+                    if negat == False:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has alphabet of length more than [{value}]"
                 if datat == "TN":
                     if negat == True:
                         plain_text_assertion += f"\n• The textfield {self.header[index]} has length less than [{value}]"
