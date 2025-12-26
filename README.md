@@ -1,4 +1,4 @@
-# Algorithme AI - Snake Oracle
+# Algorithme AI - Snake 🐍
 **Author:** Charles Dana & Algorithme.ai
 
 Snake is an **XAI (Explainable AI)** polynomial-time multiclass oracle. It provides high-accuracy classification while maintaining a full "Audit Trail" for every prediction, allowing you to understand *why* the model reached a specific conclusion through "lookalike" analysis and logical AND statements.
@@ -197,3 +197,4 @@ Snake can audit each and every one of its multiclass decisions, making it a reli
 
 ### 📜 License
 This project is licensed under the MIT License.
+
