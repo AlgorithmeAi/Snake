@@ -72,8 +72,12 @@ if __name__ == "__main__":
         # 1. Convert .txt to .csv
         temp_csv = convert_to_csv(chat_path)
         
-        # 2. Split with 1000 train samples
-        prepare_limited_data(temp_csv, train_limit=1000)
+        # 1. bis
+        tmp_df = pd.read_csv(temp_csv)
+
+        N = tmp_df.shape[0]
+        # 2. Split with 1000 train sample
+        prepare_limited_data(temp_csv, train_limit=min(1000, 3* N//4))
         
         # 3. Run prediction model
         run_prediction()
