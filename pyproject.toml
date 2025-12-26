@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "algorithmeai"
+version = "0.1.0"
+description = "Snake - The XAI polynomial time multiclass oracle"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+# Fixed authors list to use correct syntax
+authors = [
+    { name = "Algorithme.ai" },
+    { name = "Charles Dana" }
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/AlgorithmeAi/Snake"
+Repository = "https://github.com/AlgorithmeAi/Snake"
+Documentation = "https://github.com/AlgorithmeAi/Snake#readme"
+
+# This section ensures your .py files are found by the build backend
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["."]
