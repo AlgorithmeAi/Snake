@@ -123,6 +123,7 @@ class Snake():
             "targets" : self.targets,
             "clauses" : self.clauses,
             "lookalikes" : self.lookalikes,
+            "datatypes" : self.datatypes,
             "n_layers" : self.n_layers,
             "vocal" : self.vocal,
             "log" : self.log
@@ -142,6 +143,7 @@ class Snake():
         self.lookalikes = loaded_module["lookalikes"]
         self.n_layers = loaded_module["n_layers"]
         self.vocal = loaded_module["vocal"]
+        self.datatypes = loaded_module["datatypes"]
         self.log = loaded_module["log"]
         self.qprint(f"# Algorithme.ai : Successful load from {filepath}")
         
@@ -232,6 +234,8 @@ class Snake():
         index = choice(candidates)
         h = self.header[index]
         if self.datatypes[index] == "T":
+            if len(T[self.header[index]]) != len(F[self.header[index]]) and choice(["Do it", "Don't"]) == "Do it":
+                return [index, (len(F[h]) + len(T[h])) / 2, len(T[h]) > len(F[h]), "TN"]
             pros = set()
             cons = set()
             for sep in [" ", "/", ":", "-"]:
@@ -264,6 +268,11 @@ class Snake():
         datat = literal[3]
         if not self.header[index] in X:
             return False
+        if datat == "TN":
+            if negat == True:
+                return value <= len(X[self.header[index]])
+            if negat == False:
+                return value > len(X[self.header[index]])
         if datat == "T":
             if negat == True:
                 return not value in X[self.header[index]]
@@ -355,6 +364,11 @@ class Snake():
                 value = literal[1]
                 negat = literal[2]
                 datat = literal[3]
+                if datat == "TN":
+                    if negat == True:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has length less than [{value}]"
+                    if negat == False:
+                        plain_text_assertion += f"\n• The textfield {self.header[index]} has more than [{value}]"
                 if datat == "T":
                     if negat == True:
                         plain_text_assertion += f"\n• The text field {self.header[index]} contains [{value}]"
