@@ -1,3 +1,12 @@
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](#)
+[![Explainability](https://img.shields.io/badge/XAI-Transparent_AI-orange.svg)](#)
+[![Stars](https://img.shields.io/github/stars/algorithmeai/snake?style=social)](#)
+
+**Author:** Charles Dana · [Algorithme.ai](https://algorithme.ai)
+
 # Algorithme AI - Snake 🐍
 **Author:** Charles Dana & Algorithme.ai
 
@@ -197,4 +206,5 @@ Snake can audit each and every one of its multiclass decisions, making it a reli
 
 ### 📜 License
 This project is licensed under the MIT License.
+
 
