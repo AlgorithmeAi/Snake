@@ -473,8 +473,8 @@ class ChatAnalyzer:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python groupchat_enhanced.py <chat_file.txt>")
-        print("\nExample: python groupchat_enhanced.py whatsapp_chat.txt")
+        print("Usage: python whatsapp.py <chat_file.txt>")
+        print("\nExample: python whatsapp.py whatsapp_chat.txt")
         return
     
     chat_path = sys.argv[1]
