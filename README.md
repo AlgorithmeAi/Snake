@@ -8,7 +8,11 @@
 **Author:** Charles Dana · [Algorithme.ai](https://algorithme.ai)
 
 # Algorithme AI - Snake 🐍
-**Author:** Charles Dana & Algorithme.ai
+**Author:** Charles Dana  
+**Date:** December 2025  
+**Complexity:** O(mn²)
+
+A Python library for CSV data analysis and classification using a SAT logic-based approach with explanatory clauses.
 
 Snake is an **XAI (Explainable AI)** polynomial-time multiclass oracle. It provides high-accuracy classification while maintaining a full "Audit Trail" for every prediction, allowing you to understand *why* the model reached a specific conclusion through "lookalike" analysis and logical AND statements.
 
@@ -34,14 +38,6 @@ To install the package in editable mode for local development:
 ```bash
 pip install -e .
 ```
-
-# Algorithme.ai - Snake
-
-**Author:** Charles Dana  
-**Date:** December 2025  
-**Complexity:** O(mn²)
-
-A Python library for CSV data analysis and classification using a SAT logic-based approach with explanatory clauses.
 
 ## 📋 Table of Contents
 
@@ -423,6 +419,7 @@ The saved model contains:
 © Charles Dana, December 2025
 
 This project is licensed under the MIT License.
+
 
 
 
