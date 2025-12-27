@@ -35,177 +35,395 @@ To install the package in editable mode for local development:
 pip install -e .
 ```
 
-### 📖 Usage Example: Titanic Submission
-The following script trains the model on 100 layers and generates a submission file for Kaggle.
+# Algorithme.ai - Snake
+
+**Author:** Charles Dana  
+**Date:** December 2025  
+**Complexity:** O(mn²)
+
+A Python library for CSV data analysis and classification using a SAT logic-based approach with explanatory clauses.
+
+## 📋 Table of Contents
+
+- [Installation](#installation)
+- [Overview](#overview)
+- [Quick Start](#quick-start)
+- [Function Documentation](#function-documentation)
+- [Supported Problem Types](#supported-problem-types)
+- [Examples](#examples)
+
+## 🚀 Installation
+
 ```python
 from algorithmeai import Snake
-
-# 1. Initialize and train the Snake Oracle
-# target_index=1 corresponds to the 'Survived' column
-snake = Snake("titanic/train.csv", target_index=1, n_layers=100)
-
-# 2. Prepare the test population from CSV
-population = snake.make_population("titanic/test.csv")
-
-# 3. Generate Submission and Audit results
-with open("submission_snake.csv", "w") as f:
-    f.write("PassengerId,Survived")
-    
-    for X in population:
-        # Get probability for the positive class (1)
-        # snake.get_probability(X) returns a dict or list indexed by class
-        probability = snake.get_probability(X)[1]
-        
-        # Apply the optimized threshold (0.61) for the Titanic challenge
-        prediction = 1 if probability > 0.61 else 0
-        
-        # Ensure PassengerId is written as a clean integer string
-        p_id = str(int(float(X["PassengerId"])))
-        
-        f.write(f"\n{p_id},{prediction}")
-        
-        # Print XAI Audit trail to console for transparency
-        print(snake.get_audit(X))
 ```
 
-### 📊 Training Logs
-During training, Snake provides real-time feedback on its progress and data analysis:
-```bash
-# Algorithme.ai : Snake Analysis on Survived a binary problem 0/1
-# Algorithme.ai : Occurence Vector {0: 549, 1: 342}
-# [Sex] text field | [Age] numeric field | [Pclass] numeric field ...
-# Algorithme.ai : Layer 0/100, remainder 23.05s.
-# Algorithme.ai : Layer 50/100, remainder 12.16s.
-# Algorithme.ai : Layer 99/100, remainder 0.24s.
-Safely saved to snakeclassifier.json
+No external dependencies required - uses only Python standard library.
+
+## 📖 Overview
+
+**Snake** is a multiclass CSV data handler that builds explanatory models based on logical clauses. The system identifies "lookalikes" (similar data points) and generates interpretable rules for classification.
+
+### Key Features
+
+- **Explainable Classification**: Generates understandable logical rules
+- **Multi-type Support**: Handles binary, integer, float, and text data
+- **Complete Audit**: Provides detailed explanations for each prediction
+- **Validation**: Pruning process to optimize the model
+
+## ⚡ Quick Start
+
+```python
+# Create a Snake model
+model = Snake(
+    csv_path="data.csv",
+    n_layers=100,
+    vocal=True,
+    target_index=0,
+    excluded_features_index=[1, 2]
+)
+
+# Make a prediction
+datapoint = {"feature1": 5.2, "feature2": "text", ...}
+prediction = model.get_prediction(datapoint)
+
+# Get a complete explanation
+audit = model.get_audit(datapoint)
+
+# Save the model
+model.to_json("my_model.json")
+
+# Load an existing model
+model = Snake("my_model.json")
 ```
 
-### 🔎 Audit feature
-Snake can audit each and every one of its multiclass decisions, making it a reliable R.A.G. machine
-```bash
-### BEGIN AUDIT ###
-        ### Datapoint {'Survived': 0, 'PassengerId': 892.0, 'Pclass': 3.0, 'Name': 'Kelly, Mr. James', 'Sex': 'male', 'Age': 34.5, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '330911', 'Fare': 7.8292, 'Cabin': '', 'Embarked': 'Q'}
-        ## Number of lookalikes 1076
-        ## Predicted outcome (max proba) [0]
-        
-# Probability of being equal to class 0 : 98.88475836431226%
-# Probability of being equal to class 1 : 1.1152416356877324%
+## 📚 Function Documentation
 
-        # Datapoint is a lookalike to #4 of class [0]
-        - {'Survived': 0, 'PassengerId': 5.0, 'Pclass': 3.0, 'Name': 'Allen, Mr. William Henry', 'Sex': 'male', 'Age': 35.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '373450', 'Fare': 8.05, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The text field Sex do not contains [female]
-• The numeric field Age is more than [32.5]
-• The numeric field Age is less than [39.0]
-• The numeric field Pclass is more than [2.5]
-• The numeric field Pclass is more than [2.5]
-• The text field Sex do not contains [female]
-• The numeric field Age is more than [34.5]
-• The text field Name do not contains [Juha]
-• The numeric field Age is less than [41.5]
+### Initialization
 
-        # Datapoint is a lookalike to #4 of class [0]
-        - {'Survived': 0, 'PassengerId': 5.0, 'Pclass': 3.0, 'Name': 'Allen, Mr. William Henry', 'Sex': 'male', 'Age': 35.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '373450', 'Fare': 8.05, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Age is more than [34.0]
-• The numeric field Age is less than [37.0]
-• The numeric field SibSp is less than [0.5]
-• The numeric field Pclass is more than [2.5]
+#### `Snake(csv_path, n_layers=100, vocal=True, target_index=0, excluded_features_index=[])`
 
-        # Datapoint is a lookalike to #4 of class [0]
-        - {'Survived': 0, 'PassengerId': 5.0, 'Pclass': 3.0, 'Name': 'Allen, Mr. William Henry', 'Sex': 'male', 'Age': 35.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '373450', 'Fare': 8.05, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Pclass is more than [2.0]
-• The numeric field Age is more than [33.0]
-• The text field Cabin do not contains [D56]
-• The numeric field Age is less than [36.5]
-• The text field Sex do not contains [female]
+Creates a Snake instance from a CSV or JSON file.
 
-        # Datapoint is a lookalike to #5 of class [0]
-        - {'Survived': 0, 'PassengerId': 6.0, 'Pclass': 3.0, 'Name': 'Moran, Mr. James', 'Sex': 'male', 'Age': 0.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '330877', 'Fare': 8.4583, 'Cabin': '', 'Embarked': 'Q'}
-        
-        Because of the following AND statement that applies to both
-        
-• The text field Embarked contains [Q]
-• The text field Name contains [Mr.]
-• The text field Ticket do not contains [382651]
-• The numeric field Fare is less than [15.5396]
-• The text field Ticket do not contains [367228]
+**Parameters:**
+- `csv_path` (str): Path to CSV or JSON file
+- `n_layers` (int): Number of logical layers to build (default: 100)
+- `vocal` (bool): Enable verbose logging (default: True)
+- `target_index` (int): Index of the target column (default: 0)
+- `excluded_features_index` (list): Indices of columns to exclude from training
 
-        # Datapoint is a lookalike to #22 of class [1]
-        - {'Survived': 1, 'PassengerId': 23.0, 'Pclass': 3.0, 'Name': 'McGowan, Miss. Anna Annie', 'Sex': 'female', 'Age': 15.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '330923', 'Fare': 8.0292, 'Cabin': '', 'Embarked': 'Q'}
-        
-        Because of the following AND statement that applies to both
-        
-• The text field Embarked contains [Q]
-• The numeric field Fare is less than [11.6896]
-• The numeric field Age is more than [9.5]
-• The numeric field Fare is more than [7.8146]
-
-        # Datapoint is a lookalike to #44 of class [1]
-        - {'Survived': 1, 'PassengerId': 45.0, 'Pclass': 3.0, 'Name': 'Devaney, Miss. Margaret Delia', 'Sex': 'female', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': '330958', 'Fare': 7.8792, 'Cabin': '', 'Embarked': 'Q'}
-        
-        Because of the following AND statement that applies to both
-        
-• The text field Embarked contains [Q]
-• The numeric field Fare is less than [11.6896]
-• The numeric field Age is more than [9.5]
-• The numeric field Fare is more than [7.8146]
-
-        # Datapoint is a lookalike to #67 of class [0]
-        - {'Survived': 0, 'PassengerId': 68.0, 'Pclass': 3.0, 'Name': 'Crease, Mr. Ernest James', 'Sex': 'male', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': 'S.P. 3464', 'Fare': 8.1583, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Fare is less than [10.125]
-• The text field Name contains [James]
-
-        # Datapoint is a lookalike to #67 of class [0]
-        - {'Survived': 0, 'PassengerId': 68.0, 'Pclass': 3.0, 'Name': 'Crease, Mr. Ernest James', 'Sex': 'male', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': 'S.P. 3464', 'Fare': 8.1583, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Fare is less than [9.24585]
-• The text field Name contains [James]
-
-        # Datapoint is a lookalike to #67 of class [0]
-        - {'Survived': 0, 'PassengerId': 68.0, 'Pclass': 3.0, 'Name': 'Crease, Mr. Ernest James', 'Sex': 'male', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': 'S.P. 3464', 'Fare': 8.1583, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Pclass is more than [2.0]
-• The text field Sex do not contains [female]
-• The text field Name contains [James]
-
-        # Datapoint is a lookalike to #67 of class [0]
-        - {'Survived': 0, 'PassengerId': 68.0, 'Pclass': 3.0, 'Name': 'Crease, Mr. Ernest James', 'Sex': 'male', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': 'S.P. 3464', 'Fare': 8.1583, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The text field Name contains [James]
-• The numeric field Fare is less than [17.4854]
-• The text field Ticket do not contains [33595]
-
-        # Datapoint is a lookalike to #67 of class [0]
-        - {'Survived': 0, 'PassengerId': 68.0, 'Pclass': 3.0, 'Name': 'Crease, Mr. Ernest James', 'Sex': 'male', 'Age': 19.0, 'SibSp': 0.0, 'Parch': 0.0, 'Ticket': 'S.P. 3464', 'Fare': 8.1583, 'Cabin': '', 'Embarked': 'S'}
-        
-        Because of the following AND statement that applies to both
-        
-• The numeric field Pclass is more than [1.5]
-• The numeric field SibSp is less than [1.0]
-• The text field Name contains [James]
-• The text field Ticket do not contains [C.A.]
-...
+**Example:**
+```python
+model = Snake("dataset.csv", n_layers=50, target_index=0)
 ```
 
-### 📜 License
+---
+
+### Prediction Functions
+
+#### `get_prediction(X)`
+
+Predicts the most probable class for a data point.
+
+**Parameters:**
+- `X` (dict): Dictionary with feature values
+
+**Returns:** Predicted target value
+
+**Example:**
+```python
+prediction = model.get_prediction({"age": 25, "name": "Alice"})
+```
+
+---
+
+#### `get_probability(X)`
+
+Computes the probability vector for all classes.
+
+**Parameters:**
+- `X` (dict): Dictionary with feature values
+
+**Returns:** Dictionary {class: probability}
+
+**Example:**
+```python
+probas = model.get_probability({"age": 25, "name": "Alice"})
+# Result: {0: 0.75, 1: 0.25}
+```
+
+---
+
+#### `get_lookalikes(X)`
+
+Identifies similar data points in the training set.
+
+**Parameters:**
+- `X` (dict): Dictionary with feature values
+
+**Returns:** List of triplets [index, class, conditions]
+
+**Example:**
+```python
+lookalikes = model.get_lookalikes({"age": 25, "name": "Alice"})
+# Result: [[42, 1, [0, 5, 12]], [87, 1, [3, 7]]]
+```
+
+---
+
+### Audit and Explanation Functions
+
+#### `get_audit(X)`
+
+Generates a complete audit report for a prediction.
+
+**Parameters:**
+- `X` (dict): Dictionary with feature values
+
+**Returns:** String with detailed audit
+
+**Example:**
+```python
+audit = model.get_audit({"age": 25, "name": "Alice"})
+print(audit)
+```
+
+---
+
+#### `get_plain_text_assertion(condition, l)`
+
+Converts a logical condition into readable text.
+
+**Parameters:**
+- `condition` (list): List of clause indices
+- `l` (int): Index of the lookalike data point
+
+**Returns:** Textual description of the condition
+
+---
+
+#### `get_augmented(X)`
+
+Enriches a data point with all available information.
+
+**Parameters:**
+- `X` (dict): Dictionary with feature values
+
+**Returns:** Enriched dictionary with lookalikes, probabilities, prediction, and audit
+
+**Example:**
+```python
+augmented = model.get_augmented({"age": 25, "name": "Alice"})
+# Contains: X + Lookalikes, Probability, Prediction, Audit
+```
+
+---
+
+### Internal Logical Functions
+
+#### `apply_literal(X, literal)`
+
+Tests if a data point satisfies a logical literal.
+
+**Parameters:**
+- `X` (dict): Data point
+- `literal` (list): [index, value, negation, data_type]
+
+**Returns:** True if the literal is satisfied, False otherwise
+
+---
+
+#### `apply_clause(X, clause)`
+
+Tests if a data point satisfies a clause (OR of literals).
+
+**Parameters:**
+- `X` (dict): Data point
+- `clause` (list): List of literals
+
+**Returns:** True if at least one literal is satisfied
+
+---
+
+### Model Management
+
+#### `to_json(fout="snakeclassifier.json")`
+
+Saves the model to JSON format.
+
+**Parameters:**
+- `fout` (str): Output file path
+
+**Example:**
+```python
+model.to_json("my_model_v1.json")
+```
+
+---
+
+#### `from_json(filepath="snakeclassifier.json")`
+
+Loads a model from a JSON file.
+
+**Parameters:**
+- `filepath` (str): Path to the file to load
+
+---
+
+#### `make_validation(Xs, pruning_coef=0.5)`
+
+Validates and prunes the model on a validation set.
+
+**Parameters:**
+- `Xs` (list): List of validation data points
+- `pruning_coef` (float): Pruning coefficient (0.5 = reduce by half)
+
+**Example:**
+```python
+validation_set = [{"age": 30, "name": "Bob", "target": 1}, ...]
+model.make_validation(validation_set, pruning_coef=0.6)
+```
+
+---
+
+### Utilities
+
+#### `read_csv(fname)`
+
+Parses a CSV file with quote handling.
+
+**Parameters:**
+- `fname` (str): CSV file path
+
+**Returns:** Tuple (header, data)
+
+---
+
+#### `make_population(fname, drop=False)`
+
+Creates the data population from a CSV.
+
+**Parameters:**
+- `fname` (str): CSV file path
+- `drop` (bool): If True, removes duplicates
+
+**Returns:** List of dictionaries
+
+---
+
+## 🎯 Supported Problem Types
+
+Snake automatically detects the problem type:
+
+### 1. **Binary (0/1 or True/False)**
+```python
+# Examples: fraud/not fraud, sick/healthy
+```
+
+### 2. **Multiclass Integers**
+```python
+# Examples: categories 0, 1, 2, 3
+```
+
+### 3. **Regression (Floating Point Numbers)**
+```python
+# Examples: prices, temperatures, scores
+```
+
+### 4. **Text Classification**
+```python
+# Examples: named categories, text labels
+```
+
+## 💡 Complete Examples
+
+### Example 1: Simple Classification
+
+```python
+# Create and train the model
+model = Snake("iris.csv", n_layers=50, target_index=4)
+
+# Predict
+new_flower = {
+    "sepal_length": 5.1,
+    "sepal_width": 3.5,
+    "petal_length": 1.4,
+    "petal_width": 0.2
+}
+
+prediction = model.get_prediction(new_flower)
+probabilities = model.get_probability(new_flower)
+
+print(f"Prediction: {prediction}")
+print(f"Probabilities: {probabilities}")
+```
+
+### Example 2: Detailed Audit
+
+```python
+# Get a complete explanation
+audit_report = model.get_audit(new_flower)
+print(audit_report)
+
+# Output:
+# ### BEGIN AUDIT ###
+# ### Datapoint {...}
+# ## Number of lookalikes 15
+# ## Predicted outcome (max proba) [setosa]
+# 
+# # Probability of being equal to class setosa : 93.3%
+# # Probability of being equal to class versicolor : 6.7%
+# ...
+```
+
+### Example 3: Validation and Optimization
+
+```python
+# Load a validation set
+validation_data = [
+    {"feature1": 1.2, "feature2": "A", "target": 0},
+    {"feature1": 3.4, "feature2": "B", "target": 1},
+    # ...
+]
+
+# Prune the model
+model.make_validation(validation_data, pruning_coef=0.7)
+
+# Save the optimized model
+model.to_json("model_optimized.json")
+```
+
+## 📊 Data Structure
+
+### Input CSV Format
+```csv
+target,feature1,feature2,feature3
+1,5.2,"text A",100
+0,3.1,"text B",200
+```
+
+### Output JSON Format
+The saved model contains:
+- `population`: Training data
+- `header`: Column names
+- `clauses`: Learned logical rules
+- `lookalikes`: Indices of similar points
+- `datatypes`: Type of each column
+- `log`: Operation history
+
+## ⚠️ Important Notes
+
+- CSV files must be formatted by pandas (`df.to_csv()`)
+- Triple quotes in CSV are handled automatically
+- Missing values are converted to 0 (numeric) or "" (text)
+- Complexity is O(mn²) where m = number of features, n = number of rows
+
+## 📝 License
+
+© Charles Dana, December 2025
+
 This project is licensed under the MIT License.
+
 
 
 
