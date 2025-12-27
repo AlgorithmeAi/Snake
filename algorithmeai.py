@@ -3,7 +3,7 @@ from random import choice
 from time import time
 
 """
-When woring with strings of floating point, handles the mistakes by replacing the value to 0.0 when floating parse error
+When working with strings of floating point, handles the mistakes by replacing the value to 0.0 when floating parse error
 """
 def floatconversion(txt):
     try:
@@ -12,6 +12,9 @@ def floatconversion(txt):
     except ValueError:
         return 0.0
         
+"""
+Snake() of data will provide insights
+"""
 class Snake():
     def __init__(self, csv_path, n_layers=100, vocal=True, target_index=0, excluded_features_index=[]):
         self.log = """################################################################
@@ -404,7 +407,9 @@ class Snake():
             for l in lookalikes:
                 self.lookalikes[str(l)] += [lookalikes[str(l)]]
 
-
+    """
+    Partial audit for a given lookalike
+    """
     def get_plain_text_assertion(self, condition, l):
         plain_text_assertion = f"""
         # Datapoint is a lookalike to #{l} of class [{self.targets[int(l)]}]
@@ -458,6 +463,10 @@ class Snake():
                         plain_text_assertion += f"\n• The numeric field {self.header[index]} is more than [{value}]"
         return plain_text_assertion
 
+    """
+    Audit for a given datapoint
+    R.A.G.
+    """
     def get_audit(self, X):
         lookalikes = self.get_lookalikes(X)
         probability = self.get_probability(X)
@@ -512,9 +521,10 @@ class Snake():
     
     def get_augmented(self, X):
         Y = X.copy()
-        Y["AAI - Lookalikes"] = self.get_lookalikes(X)
-        Y["AAI - Probability"] = self.get_probability(X)
-        Y["AAI - Prediction"] = self.get_prediction(X)
+        Y["Lookalikes"] = self.get_lookalikes(X)
+        Y["Probability"] = self.get_probability(X)
+        Y["Prediction"] = self.get_prediction(X)
+        Y["Audit"] = self.get_audit(X)
         return Y
         
             
