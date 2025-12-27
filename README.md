@@ -15,7 +15,7 @@ Snake is an **XAI (Explainable AI)** polynomial-time multiclass oracle. It provi
 ---
 
 ### 🚀 Performance
-The Snake algorithm achieves a high accuracy score of **0.795** on the **Titanic Kaggle Dataset** challenge.
+The Snake algorithm achieves a high accuracy score of **0.81100** on the **Titanic Kaggle Dataset** challenge.
 
 ### 🔍 Explainability (XAI)
 Unlike "black-box" models, Snake provides a full audit of its reasoning. It identifies "lookalikes" from the training set and displays the exact logical conditions that link them to the new data point.
@@ -206,5 +206,6 @@ Snake can audit each and every one of its multiclass decisions, making it a reli
 
 ### 📜 License
 This project is licensed under the MIT License.
+
 
 
