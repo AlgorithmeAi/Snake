@@ -111,7 +111,7 @@ class Snake():
                 self.qprint(f"# Algorithme.ai : Layer {i}/{self.n_layers}, remainder {remainder}s.")
             self.to_json()
         if ".json" in csv_path:
-            self.from_json(filepath)
+            self.from_json(csv_path)
 
     def qprint(self, txt):
         if self.vocal:
@@ -518,7 +518,9 @@ class Snake():
         pr_max = max((probability[target] for target in probability))
         prediction = [target for target in probability if probability[target] == pr_max][0]
         return prediction
-    
+    """
+    Augments a datapoint with every available information
+    """
     def get_augmented(self, X):
         Y = X.copy()
         Y["Lookalikes"] = self.get_lookalikes(X)
@@ -526,6 +528,28 @@ class Snake():
         Y["Prediction"] = self.get_prediction(X)
         Y["Audit"] = self.get_audit(X)
         return Y
-        
-            
-                    
+    
+    """
+    Validation process of the lookalikes table on the premise of a targeted sample
+    """
+    def make_validation(self, Xs, pruning_coef=0.5):
+        new_n_layers = int(self.n_layers * pruning_coef)
+        self.qprint(f"# Algorithme.ai : Validation process will translate the model from {self.n_layers} to -> {new_n_layers}")
+        weights = {l : [[0,0] for condition in self.lookalikes[l]] for l in self.lookalikes}
+        for X in Xs:
+            if self.target in X:
+                target = X[self.target]
+                unsat_clauses = [i for i in range(len(self.clauses)) if self.apply_clause(X, self.clauses[i]) == False]
+                for l in weights:
+                    l_target = self.targets[int(l)]
+                    c_index = 0
+                    for condition in self.lookalikes[l]:
+                        if len([i for i in condition if i in unsat_clauses]) == len(condition):
+                            weights[l][c_index][l_target == target] += 1
+                        c_index += 1
+        for l in self.lookalikes:
+            ranked_conditions = sorted([c_index for c_index in range(len(weights[l]))], key=lambda c_index: weights[l][c_index][0] - weights[l][c_index][1])
+            kept_indexes = ranked_conditions[:new_n_layers]
+            self.lookalikes[l] = [self.lookalikes[l][c_index] for c_index in kept_indexes]
+        self.n_layers = new_n_layers
+
